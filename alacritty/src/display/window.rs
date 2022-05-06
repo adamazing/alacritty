@@ -49,9 +49,14 @@ use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 #[cfg(windows)]
 use winapi::shared::minwindef::WORD;
 
+#[cfg(target_os = "windows")]
+use window_vibrancy::apply_blur;
+#[cfg(target_os = "macos")]
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+
 use alacritty_terminal::index::Point;
 
-use crate::config::window::{Decorations, Identity, WindowConfig};
+use crate::config::window::{BlurMode, Decorations, Identity, WindowConfig};
 use crate::config::UiConfig;
 use crate::display::SizeInfo;
 use crate::gl;
@@ -255,6 +260,16 @@ impl Window {
         };
 
         let scale_factor = windowed_context.window().scale_factor();
+
+        #[cfg(target_os = "macos")]
+        if config.window.blur_background == BlurMode::Blur {
+            let _result = apply_vibrancy(windowed_context.window(), NSVisualEffectMaterial::UnderWindowBackground);
+        };
+
+        #[cfg(target_os = "windows")]
+        if config.window.blur_background == BlurMode::Blur {
+            let _result = apply_blur(windowed_context.window(), Some((200,200,200,100)));
+        }
 
         Ok(Self {
             current_mouse_cursor,

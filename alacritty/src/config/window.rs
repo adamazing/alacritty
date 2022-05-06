@@ -46,6 +46,9 @@ pub struct WindowConfig {
     /// Background opacity from 0.0 to 1.0.
     pub opacity: Percentage,
 
+    /// Blur transparency
+    pub blur_background: BlurMode,
+
     /// Pixel padding.
     padding: Delta<u8>,
 
@@ -65,6 +68,7 @@ impl Default for WindowConfig {
             dynamic_padding: Default::default(),
             identity: Identity::default(),
             opacity: Default::default(),
+            blur_background: BlurMode::default(),
             padding: Default::default(),
             dimensions: Default::default(),
         }
@@ -104,6 +108,15 @@ impl WindowConfig {
     pub fn maximized(&self) -> bool {
         self.startup_mode == StartupMode::Maximized
     }
+
+    #[inline]
+    pub fn blur_background(&self) -> Option<BlurMode> {
+        if self.blur_background == BlurMode::Blur {
+            Some(self.blur_background)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(ConfigDeserialize, Debug, Clone, PartialEq)]
@@ -133,6 +146,19 @@ pub enum StartupMode {
 impl Default for StartupMode {
     fn default() -> StartupMode {
         StartupMode::Windowed
+    }
+}
+
+#[derive(ConfigDeserialize, Debug, Copy, Clone, PartialEq, Eq)]
+pub enum BlurMode {
+    #[cfg(any(target_os = "windows", target_os = "macos"))]
+    Blur,
+    None,
+}
+
+impl Default for BlurMode {
+    fn default() -> BlurMode {
+        BlurMode::None
     }
 }
 

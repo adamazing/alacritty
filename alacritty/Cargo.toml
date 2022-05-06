@@ -52,6 +52,9 @@ raw-window-handle = "0.4.0"
 cocoa = "0.24.0"
 objc = "0.2.2"
 
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+window-vibrancy="0.1.2"
+
 [target.'cfg(not(any(target_os="windows", target_os="macos")))'.dependencies]
 x11-dl = { version = "2", optional = true }
 wayland-client = { version = "0.29.0", features = ["dlopen"], optional = true }
